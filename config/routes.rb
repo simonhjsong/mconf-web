@@ -65,6 +65,8 @@ Mconf::Application.routes.draw do
 
   resources :spaces do
 
+    get :crop
+
     collection do
       get :select
     end

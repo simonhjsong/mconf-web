@@ -1,0 +1,29 @@
+#crop-modal
+  .modal-header
+    = modal_close_button
+    %h3= t('logo.crop')
+
+  .modal-body
+
+    .jcrop-wrapper
+      = image_tag @space.logo_image_url, :class => 'cropable',
+          :'data-crop-width' => @width, :'data-crop-aspect-ratio' => @aspect_ratio,
+          :'data-original-width' => @space.logo_image.width, :'data-original-height' => @space.logo_image.height
+
+    .preview
+      .preview-title= t('logo_images.crop.preview')
+      -# TODO: can't this style be in the css? or part of it?
+      .jcrop-wrapper{ :style => "width:#{@width.to_i}px; height:100px; overflow:hidden" }
+        = image_tag @space.logo_image_url(:large), :class => 'crop-preview'
+
+  .modal-footer.form-actions
+    = simple_form_for @space, :html => { :multipart => true, :'data-crop-target-image' => '#edit-space-current-logo' } do |f|
+      - %w[x y w h].each do |attribute|
+        = f.hidden_field "crop_#{attribute}", :class => "crop-#{attribute}"
+      .crop-options
+        %a#crop-current.btn.btn-link{:href => '#'}
+          = t('logo_images.crop.current')
+        = t('logo_images.crop.upload')
+        = f.file_field :logo_image, :class => 'upload-preview', :input_html => {:accept => 'image/*'}
+
+      = f.submit t('logo_images.crop.crop_it'), :class => 'btn btn-primary'

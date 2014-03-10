@@ -40,7 +40,7 @@ class SpacesController < ApplicationController
 
   # Create recent activity
   after_filter :only => [:create, :update, :leave] do
-    @space.new_activity params[:action], current_user unless @space.errors.any? || @space.crop_x.present?
+    @space.new_activity params[:action], current_user unless @space.errors.any?
   end
 
   # Recent activity for join requests
@@ -132,6 +132,13 @@ class SpacesController < ApplicationController
     render :layout => 'spaces_show'
   end
 
+  def crop
+    @space = Space.find_by_permalink(params[:space_id])
+    @aspect_ratio = 4/3.0
+    @width = 133
+    render :layout => false if request.xhr?
+  end
+
   def update
     unless params[:space][:bigbluebutton_room_attributes].blank?
       params[:space][:bigbluebutton_room_attributes][:id] = @space.bigbluebutton_room.id
@@ -139,14 +146,10 @@ class SpacesController < ApplicationController
 
     if @space.update_attributes(space_params)
       respond_to do |format|
-        if params[:space][:logo_image].present?
-          format.html { redirect_to logo_images_crop_path(:model_type => 'space', :model_id => @space) }
-        else
-          format.html {
-            flash[:success] = t('space.updated')
-            redirect_to :back
-          }
-        end
+        format.html {
+          flash[:success] = t('space.updated')
+          redirect_to :back
+        }
       end
     else
       respond_to do |format|

@@ -12,6 +12,7 @@ class mconf.Crop
   @bind: ->
     $("form.form-for-crop").each ->
       selectFileForm = $(this)
+
       # when the user selects a file it automatically submits the form
       $element = $("input[type=file]", selectFileForm)
       $element.off "change.mconfCrop"
@@ -38,15 +39,55 @@ class mconf.Crop
             data: data
             element: selectFileForm
 
-# Enables the crop in all 'cropable' elements in the document
-enableCropInImages = (cropModal) ->
-  $("img.cropable", cropModal).each ->
-    image = this
-    $(image).Jcrop
-      aspectRatio: $(image).attr('data-crop-aspect-ratio')
-      setSelect: [0, 0, 350, 350]
-      onSelect: (coords) -> update(cropModal, image, coords)
-      onChange: (coords) -> update(cropModal, image, coords)
+  @bindCrop: ->
+    cropForm = $("#crop-modal form")
+    cropModal = $("#crop-modal")
+
+    mconf.Crop.disableCrop(cropModal)
+    mconf.Crop.enableCropInImages(cropModal)
+    bindAjaxToCropForm($(this), cropForm)
+
+  @enableUploadPreview: ->
+    $('input.upload-preview').change (event) ->
+      preview = $("img.cropable")
+      small_preview = $("img.crop-preview")
+      input = $(event.currentTarget)
+      file = input[0].files[0]
+      reader = new FileReader()
+
+      reader.onload = (e) ->
+        image_base64 = e.target.result
+        preview.attr "src", image_base64
+        small_preview.attr "src", image_base64
+
+        i = new Image()
+        i.onload = ->
+          $(preview).attr 'data-original-width', i.width()
+          $(preview).attr 'data-original-height', i.height()
+        i.src = image_base64
+
+        mconf.Crop.bindCrop()
+
+      reader.readAsDataURL file
+
+  @disableCrop: (cropModal) ->
+    api = $('img.cropable').data('Jcrop')
+    api.destroy() if api?
+
+  # Enables the crop in all 'cropable' elements in the document
+  @enableCropInImages: (cropModal) ->
+    $("img.cropable", cropModal).each ->
+      image = this
+      $(image).Jcrop
+        aspectRatio: $(image).attr('data-crop-aspect-ratio')
+        minSize: [100, 100]
+        setSelect: [0, 0, 350, 350]
+        boxHeight: 350
+        trueSize: [$(image).attr('data-original-width'), $(image).attr('data-original-height')]
+        onSelect: (coords) -> update(cropModal, image, coords)
+        onChange: (coords) -> update(cropModal, image, coords)
+
+      $('.preview').show()
 
 # Updates the attributes in the page using the coordinates set by Jcrop.
 # `image` is the image that's being cropped and `coords` the coordinates set by Jcrop over
@@ -60,6 +101,7 @@ update = (cropModal, image, coords) ->
 
 updatePreview = (cropModal, image, coords) ->
   cropWidth = $(image).attr("data-crop-width")
+
   $('.crop-preview', cropModal).css
     width: Math.round(cropWidth/coords.w * $(image).width()) + 'px'
     height: Math.round(100/coords.h * $(image).height()) + 'px'

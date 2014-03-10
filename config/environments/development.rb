@@ -27,6 +27,8 @@ Mconf::Application.configure do
   # Print deprecation notices to the Rails logger
   config.active_support.deprecation = :log
 
+  config.asset_host = 'localhost:3000'
+
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
 

@@ -84,7 +84,10 @@ class Space < ActiveRecord::Base
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
   mount_uploader :logo_image, LogoImageUploader
   after_create :crop_logo
-  after_update :crop_logo
+  after_save :crop_logo
+
+  attr_accessible :logo_image, :crop_x, :crop_y, :crop_w, :crop_h
+  attr_accessible :logo_image_cache
 
   default_scope :conditions => { :disabled => false }
 

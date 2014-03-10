@@ -27,6 +27,10 @@ body.spaces.edit {
     right: 50px;
     z-index: $z-index-navbar;
 
+    #open-crop {
+      display: block;
+    }
+
     form {
       text-align: center;
       .input.file.optional {

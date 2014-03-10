@@ -15,6 +15,16 @@ class LogoImageUploader < CarrierWave::Uploader::Base
     %w(jpg jpeg png svg tif gif)
   end
 
+  def width
+    @img ||= ::Magick::Image::read(@file.file).first
+    @img.columns
+  end
+
+  def height
+    @img ||= ::Magick::Image::read(@file.file).first
+    @img.rows
+  end
+
   # Create different versions of your uploaded files:
   version :large do
     resize_to_limit(350,350)
@@ -42,7 +52,7 @@ class LogoImageUploader < CarrierWave::Uploader::Base
 
   def crop
     if model.crop_x.present?
-      resize_to_limit(350, 350)
+      #resize_to_limit(350, 350)
       manipulate! do |img|
         x = model.crop_x.to_i
         y = model.crop_y.to_i
@@ -54,3 +64,4 @@ class LogoImageUploader < CarrierWave::Uploader::Base
   end
 
 end
+

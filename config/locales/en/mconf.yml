@@ -820,6 +820,8 @@ en:
     updated: "Logo updated successfully"
   logo_images:
     crop:
+      current: Crop the current image
+      upload: "or upload a new one:"
       crop_it: "Crop it!"
       preview: "Preview"
   logout: Logout

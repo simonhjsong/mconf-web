@@ -11,12 +11,28 @@
 
     img {
       max-width: none;
+      max-height: 350px;
     }
   }
 
+  a.disabled {
+    text-decoration: none;
+  }
+
+  .crop-options {
+    float: left;
+  }
+
   .preview {
-    clear: both;
+    .jcrop-wrapper {
+      width: 133px;
+      height: 100px;
+      overflow: hidden;
+    }
+
     font-weight: bold;
-    padding: 10px 0 5px 0;
+    padding: 10px 0px 5px 20px;
+    display: none;
+    float: left;
   }
 }
